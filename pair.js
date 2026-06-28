@@ -162,10 +162,8 @@ await sock.sendMessage(
                     await delay(2000);
                     rm(dir);
                     
-                    // Exit gracefully
-                    setTimeout(() => {
-                        process.exit(0);
-                    }, 1000);
+                    // Close socket gracefully (do NOT exit — server must stay alive)
+                    try { await sock.end(); } catch(_) {}
                     
                 } catch (err) {
                     console.error("❌ Error in pairing process:", err);
@@ -179,7 +177,8 @@ await sock.sendMessage(
                         });
                     } catch(e) {}
                     
-                    process.exit(1);
+                    try { await sock.end(); } catch(_) {}
+                    return;
                 }
             }
 
@@ -212,7 +211,8 @@ await sock.sendMessage(
                     });
                 }
                 rm(dir);
-                process.exit(1);
+                try { sock.end(); } catch(_) {}
+                return;
             }
         }
     }
